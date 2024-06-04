@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Dimensions, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, Dimensions, Image, ScrollView, ImageBackground } from 'react-native';
 import axios from 'axios';
 import { debounce } from 'lodash';
 import { XMarkIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
+import Imagex from '../../assets/images/homescreen1.png';  // Correct import
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
@@ -58,65 +59,71 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <TextInput
-          value={search}
-          onChangeText={handleTextChange}
-          placeholder="Search for TV shows"
-          placeholderTextColor="gray"
-          style={styles.searchInput}
-        />
-        <TouchableOpacity
-          onPress={() => {
-            setSearch('');
-            setResults(shows);
-          }}
-        >
-          <XMarkIcon size="25" color="black" />
-        </TouchableOpacity>
-      </View>
-
-      {loading ? (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" color="#0000ff" />
+    <ImageBackground
+      source={Imagex}  // Correct usage of the imported image
+      style={styles.background}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.searchContainer}>
+          <TextInput
+            value={search}
+            onChangeText={handleTextChange}
+            placeholder="Search for TV shows"
+            placeholderTextColor="gray"
+            style={styles.searchInput}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              setSearch('');
+              setResults(shows);
+            }}
+          >
+            <XMarkIcon size="25" color="white" />
+          </TouchableOpacity>
         </View>
-      ) : (
-        <FlatList
-          data={results}
-          keyExtractor={(item) => item.show.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemPress(item)}>
-              <View style={styles.item}>
-                <Image
-                  source={{
-                    uri: item.show.image ? item.show.image.medium : 'https://via.placeholder.com/100x150?text=No+Image',
-                  }}
-                  style={styles.image}
-                />
-                <View style={styles.textContainer}>
-                  <Text style={styles.title}>{item.show.name}</Text>
-                  <ScrollView>
-                    <Text style={styles.details}>
-                      {item.show.summary ? item.show.summary.replace(/<[^>]+>/g, '') : 'No summary available.'}
-                    </Text>
-                  </ScrollView>
+
+        {loading ? (
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <FlatList
+            data={results}
+            keyExtractor={(item) => item.show.id.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleItemPress(item)}>
+                <View style={styles.item}>
+                  <Image
+                    source={{
+                      uri: item.show.image ? item.show.image.medium : 'https://via.placeholder.com/100x150?text=No+Image',
+                    }}
+                    style={styles.image}
+                  />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.title}>{item.show.name}</Text>
+                    <ScrollView>
+                      <Text style={styles.details}>
+                        {item.show.summary ? item.show.summary.replace(/<[^>]+>/g, '') : 'No summary available.'}
+                      </Text>
+                    </ScrollView>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      )}
-    </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: '#FFF', // Radiant Purple
-    alignItems: 'center',
+    width: width,
+    height: height,
   },
+ 
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -156,8 +163,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'white',
   },
   details: {
     fontSize: 14,
+    color: 'white',
   },
 });

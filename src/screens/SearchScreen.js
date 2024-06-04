@@ -9,13 +9,15 @@ import {
   StyleSheet,
   Dimensions,
   Image,
-  ScrollView
+  ScrollView,
+  ImageBackground
 } from 'react-native';
 import axios from 'axios';
 import { debounce } from 'lodash';
 import { XMarkIcon } from 'react-native-heroicons/outline';
 import { useNavigation } from '@react-navigation/native';
-const { width } = Dimensions.get("window");
+import imagey from '../../assets/images/searchscreen.png'
+const { width, height } = Dimensions.get("window");
 
 export default function Show() {
   const [loading, setLoading] = useState(false);
@@ -41,56 +43,60 @@ export default function Show() {
   const handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
 
   return (
-    
-    <View style={styles.container}>
-      {/* Search Input */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          onChangeText={handleTextDebounce}
-          placeholder="Search for TV shows"
-          placeholderTextColor="gray"
-          style={styles.searchInput}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <XMarkIcon size="25" color="black" />
-        </TouchableOpacity>
-      </View>
-
-      {loading ? (
-        <View style={styles.loader}>
-          <ActivityIndicator size="large" color="#0000ff" />
+    <ImageBackground
+      source={imagey}  // Correct usage of the imported image
+      style={styles.background}
+    >
+      <View style={styles.overlay}>
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            onChangeText={handleTextDebounce}
+            placeholder="Search for TV shows"
+            placeholderTextColor="gray"
+            style={styles.searchInput}
+          />
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <XMarkIcon size="25" color="white" />
+          </TouchableOpacity>
         </View>
-      ) : (
-        <FlatList
-          data={results}
-          keyExtractor={(item) => item.show.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              {item.show.image && item.show.image.medium && (
-                <Image
-                  source={{ uri: item.show.image.medium }}
-                  style={styles.image}
-                />
-              )}
-              <View style={styles.textContainer}>
-                <Text style={styles.title}>{item.show.name}</Text>
-                <ScrollView>
-                  <Text style={styles.details}>{item.show.summary ? (item.show.summary.replace(/<[^>]+>/g, '')) : 'No summary available.'}</Text>
-                </ScrollView>
+
+        {loading ? (
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <FlatList
+            data={results}
+            keyExtractor={(item) => item.show.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.item}>
+                {item.show.image && item.show.image.medium && (
+                  <Image
+                    source={{ uri: item.show.image.medium }}
+                    style={styles.image}
+                  />
+                )}
+                <View style={styles.textContainer}>
+                  <Text style={styles.title}>{item.show.name}</Text>
+                  <ScrollView>
+                    <Text style={styles.details}>{item.show.summary ? (item.show.summary.replace(/<[^>]+>/g, '')) : 'No summary available.'}</Text>
+                  </ScrollView>
+                </View>
               </View>
-            </View>
-          )}
-        />
-      )}
-    </View>
+            )}
+          />
+        )}
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    width: width,
+    height: height,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -131,8 +137,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'white', // Changed to white
   },
   details: {
     fontSize: 14,
+    color: 'white', // Changed to white
   },
 });
